@@ -17,3 +17,8 @@ basta simplesmente ir para a pasta raiz do projeto (`./technical_ch_paggo`) e ro
 Nessa etapa será realizada pelo docker, iremos configurar dois containers para rodar os dois bancos de dados em paralelo. 
 
  
+## Referencias
+
+- https://fastapi.tiangolo.com/deployment/docker/#check-it
+- https://hub.docker.com/r/tiangolo/uvicorn-gunicorn-fastapi
+- https://docs.sqlalchemy.org/en/20/orm/extensions/declarative/basic_use.html#defining-attributes
