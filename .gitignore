@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+.vscode/
+build/
+dist/
+docker-compose.override.yml

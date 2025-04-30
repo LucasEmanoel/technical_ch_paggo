@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  db-source:
+    image: postgres:15.3-alpine
+    container_name: postgres_db_source
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: source
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data_source:/var/lib/postgresql/data
+    
+  db-destination:
+      image: postgres:15.3-alpine
+      container_name: postgres_db_destination
+      restart: always
+      environment:
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: admin
+        POSTGRES_DB: destination
+      ports:
+        - '5433:5433'
+      volumes:
+        - db_data_destination:/var/lib/postgresql/data
+        
+volumes:
+  db_data_source:
+  db_data_destination:
