@@ -1,4 +1,6 @@
-fastapi
 pandas
 httpx
 sqlalchemy
+psycopg
+psycopg2
+python-dotenv

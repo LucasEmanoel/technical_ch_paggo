@@ -1,3 +1,5 @@
+docker stop $(docker ps -aq) && docker system prune -a && docker rm $(docker ps -aq) && docker rmi $(docker images -aq)
+
 # Setup do projeto
 
 ## Ambiente Virtual Python

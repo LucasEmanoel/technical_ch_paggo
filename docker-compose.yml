@@ -5,37 +5,64 @@ services:
     container_name: postgres_db_source
     restart: always
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: source
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_SOURCE_DB}
+    #TODO: Remova na versão final
     ports:
-      - '5434:5434'
+      - '5434:5432' 
     volumes:
       - db_data_source:/var/lib/postgresql/data
-    
+    networks:
+      - app-network
+
+      
   db-destination:
       image: postgres:15.3-alpine
       container_name: postgres_db_destination
       restart: always
       environment:
-        POSTGRES_USER: admin
-        POSTGRES_PASSWORD: admin
-        POSTGRES_DB: destination
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DESTINATION_DB}
       ports:
-        - '5433:5433'
+        - '5433:5432'
       volumes:
         - db_data_destination:/var/lib/postgresql/data
-
-  api-source:
+      networks:
+      - app-network
+  api-service:
       build:
         context: ./api
         dockerfile: Dockerfile
+      environment:
+        - DB_SOURCE_URL=${DB_SOURCE_URL}
       ports:
         - "8085:80"
       depends_on: 
         - db-source
+      networks:
+        - app-network
+
+  # etl-service:
+  #     build:
+  #       context: ./etl
+  #       dockerfile: Dockerfile
+  #     environment:
+  #       - DB_DESTINATION_URL=${DB_DESTINATION_URL}
+  #     ports:
+  #       - "8086:80"
+  #     depends_on: 
+  #       - api-service
+  #       - db-source
+  #     networks:
+  #       - app-network
 
         
 volumes:
   db_data_source:
   db_data_destination:
+
+networks:
+  app-network:
+    driver: bridge
