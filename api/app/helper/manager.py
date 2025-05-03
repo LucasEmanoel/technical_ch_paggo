@@ -13,7 +13,8 @@ from model import Base, Data
 class ManagerDB:
   def __init__(self):
     load_dotenv()
-    self._engine = create_engine(os.environ.get('DB_SOURCE_URL'))
+    #self._engine = create_engine(os.environ.get('DB_SOURCE_URL'))
+    self._engine = create_engine('postgresql+psycopg://postgres:admin@localhost:5432/source_db')
     
   def create_db(self):
     Base.metadata.create_all(self._engine)

@@ -1,5 +1,5 @@
 docker stop $(docker ps -aq) && docker system prune -a && docker rm $(docker ps -aq) && docker rmi $(docker images -aq)
-
+docker stop $(docker ps -aq) && docker rm technical_ch_paggo-api-service-1  && docker  rmi technical_ch_paggo_api-service
 # Setup do projeto
 
 ## Ambiente Virtual Python
