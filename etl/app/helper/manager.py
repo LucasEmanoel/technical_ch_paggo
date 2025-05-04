@@ -9,11 +9,15 @@ from model import Base
 class ManagerDB:
   def __init__(self):
     load_dotenv(override=True)
-    url = os.environ.get('DB_DESTINATION_URL')
+    #url = os.environ.get('DB_DESTINATION_URL')
+    url = 'postgresql+psycopg://postgres:admin@localhost:5432/destination_db'
     self._engine = create_engine(url)
     
   def create_db(self):
     Base.metadata.create_all(self._engine)
+    
+  def engine(self):
+    return self._engine
     
     
   
