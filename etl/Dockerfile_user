@@ -1,13 +1,11 @@
 FROM python:3.10-slim
-
-RUN pip install \
-    dagster \
-    dagster-postgres \
-    dagster-docker
-
 WORKDIR /opt/dagster/app
-COPY ./app /opt/dagster/app
-
+COPY app/ /opt/dagster/app
+COPY ./requirements.txt /opt/dagster/app/requirements.txt
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 4000
 
-CMD ["dagster", "code-server", "start", "-h", "0.0.0.0", "-p", "4000", "-f", "definitions.py"]
+CMD ["dagster", "api", "grpc", "-h", "0.0.0.0", "-p", "4000", "-f", "definitions.py"]

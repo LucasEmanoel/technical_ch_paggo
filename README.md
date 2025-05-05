@@ -1,42 +1,72 @@
-- docker stop $(docker ps -aq) && docker system prune -a && docker rm $(docker ps -aq) && docker rmi $(docker images -aq)
+# Roteiro de Instalação e Execução
 
-# Setup do projeto
-## Pré requisitos
-1. Python e Pip instalados
-2. Docker e Compose instalados
-## Etapas
-1. Na raiz do projeto (`./technical_ch_paggo`) criar e ativar um ambiente virtual:
-```python3
-python3 -m venv .venv
-```
-- linux/mac
-```
-source .venv/bin/activate
-```
-- Windows
-```
-source venv\Scripts\activate
-```
+Este documento apresenta o conceito da aplicação e as instruções para executá‑la localmente.
+## 1. Pré‑requisitos
 
-2. Instalar dependencias:
-```
-pip install -r api/requirements.txt
-```
-3. Rodar aplicação FastApi, considerando que já tenha o docker + [compose](https://github.com/docker/compose)
-```
-docker-compose up --build
-```
+- Docker e Docker Compose instalados.
 
-4. Rodar o pipeline
+Documentação de instalação:
+
+1. Docker: https://docs.docker.com/get-started/get-docker/
+2. Docker Compose: https://github.com/docker/compose
+
+## 2. Clonar o repositório
 ```
-dagster dev -f quickstart/assets.py
+git clone https://github.com/LucasEmanoel/technical_ch_paggo.git && cd ./technical_ch_paggo
 ```
+## 3. Verificar instalação do Docker e Compose
 
-## Modelo
-![Modelo](public/diagram.jpg "Modelo ER")
-- Considerando bancos de dados em containers diferentes, é estabelecido uma relação logica entre data e sinal, apenas por timestamp.
-- cada timestamp em sinal, será o primeiro valor dos registros agregados, o valor de agg_rows determina quantos registros de data devem ser utilizados na agregação: Ex: 10-Minutal irá utilizar 10 registros. 
+Confirme que ambos estão disponíveis na sua máquina:
+```
+docker --version
+docker-compose --version
+```
+Se algum deles não estiver instalado, siga os links acima.
+## 4. Subir os containers
+
+No diretório raiz do projeto(onde se encontra o arquivo docker-compose.yml), execute:
+```
+docker-compose up -d
+```
+Isso irá criar e iniciar os containers em segundo plano.
+## 5. Inicializar o banco de dados
+
+Foi configurado para o SQLAlchemy definir os modelos e tabelas em tempo de execução:
+
+- Abra o navegador em:
+```
+http://localhost:8085/
+```
+Ao acessar a rota `/`, o banco de dados e as tabelas serão gerados automaticamente, além de dados de exemplo (1‑minutal) serão inseridos.
+
+## 6. Executar os jobs de ETL no Dagster
+
+Acesse a interface web do Dagster (via browser) e siga estes passos:
 
 
-## Refs
-- https://docs.dagster.io/guides/build/partitions-and-backfills/partitioning-assets
+### Criar e povoar o banco
+
+- Navegue até a aba Jobs.
+
+![img](public/image.png)
+
+- Execute primeiro o job responsável por criar o esquema e inserir os tipos de sinais disponíveis. initialize_database_job
+
+![img](public/image-1.png)
+
+### Rodar o pipeline de ETL
+- Ainda em Jobs, localize o job de ETL (assets + schedules).
+![img](public/image-3.png)
+- Execute-o para processar e carregar os dados conforme definido. daily_signal_job
+
+## 7. Modelo de Dados
+
+Modelo ER
+
+![img](public/diagram.jpg)
+
+1. Cada container de banco mantém tabelas independentes; a única ligação lógica entre data e sinal é o campo timestamp.
+2. Para sinais agregados, o valor de agg_rows determina quantos registros de data são usados na agregação.
+    - Exemplo: “10‑Minutal” usa os 10 registros anteriores para calcular cada ponto agregado.
+3. A relação entre tipo_sinal e sinal, estabelece o crescimento vertical dos dados, garantindo segurança de manutenções futuras. um tipo de sinal tem vários sinais associados.
+

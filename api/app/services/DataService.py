@@ -5,7 +5,6 @@ from fastapi import HTTPException
 from model import Data
 from helper import ManagerDB
 from sqlalchemy.orm import Session
-from sqlalchemy.orm import load_only
 
 class DataService:
   

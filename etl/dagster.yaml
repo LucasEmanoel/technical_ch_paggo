@@ -20,7 +20,7 @@ run_launcher:
       - DAGSTER_POSTGRES_USER
       - DAGSTER_POSTGRES_PASSWORD
       - DAGSTER_POSTGRES_DB
-    network: docker_example_network
+    network: app_network
     container_kwargs:
       volumes: 
         - /var/run/docker.sock:/var/run/docker.sock
@@ -31,7 +31,7 @@ run_storage:
   class: PostgresRunStorage
   config:
     postgres_db:
-      hostname: docker_example_postgresql
+      hostname: db_dagster
       username:
         env: DAGSTER_POSTGRES_USER
       password:
@@ -45,7 +45,7 @@ schedule_storage:
   class: PostgresScheduleStorage
   config:
     postgres_db:
-      hostname: docker_example_postgresql
+      hostname: db_dagster
       username:
         env: DAGSTER_POSTGRES_USER
       password:
@@ -59,7 +59,7 @@ event_log_storage:
   class: PostgresEventLogStorage
   config:
     postgres_db:
-      hostname: docker_example_postgresql
+      hostname: db_dagster
       username:
         env: DAGSTER_POSTGRES_USER
       password:

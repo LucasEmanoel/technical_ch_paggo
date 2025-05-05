@@ -2,8 +2,7 @@ pandas
 httpx
 sqlalchemy
 psycopg
-psycopg2
 python-dotenv
 dagster
-dagster-webserver
 dagster-docker
+dagster-postgres

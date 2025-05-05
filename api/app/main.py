@@ -10,15 +10,8 @@ app = FastAPI()
 async def root():
   connector = ManagerDB()
   connector.create_db()
-  
-  return {"db": "Banco criado"}
-
-@app.get("/seed")
-async def seed():
-  connector = ManagerDB()
   connector.seed()
-  
-  return {"seed": "tabela data preenchida"}
+  return {"db": "Banco criado + valores inseridos"}
 
 @app.get("/listar")
 async def get_data(start: str = None, end: str = None, variables: List[str] = Query([])):
