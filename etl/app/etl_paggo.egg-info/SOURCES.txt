@@ -1,0 +1,10 @@
+setup.py
+app/etl_paggo.egg-info/PKG-INFO
+app/etl_paggo.egg-info/SOURCES.txt
+app/etl_paggo.egg-info/dependency_links.txt
+app/etl_paggo.egg-info/top_level.txt
+app/ingest/__init__.py
+app/ingest/assets.py
+app/model/SignalModel.py
+app/model/__init__.py
+app/transformation/__init__.py

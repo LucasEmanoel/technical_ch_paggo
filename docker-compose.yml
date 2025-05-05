@@ -15,8 +15,6 @@ services:
       - db_data_source:/var/lib/postgresql/data
     networks:
       - app-network
-
-      
   db-destination:
       image: postgres:15.3-alpine
       container_name: postgres_db_destination
@@ -43,22 +41,89 @@ services:
         - db-source
       networks:
         - app-network
+  db-dagster:
+    image: postgres:11
+    container_name: db_dagster
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_DAGSTER}
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres_user -d postgres_db']
+      interval: 10s
+      timeout: 8s
+      retries: 5
+  etl-code-service:
+    build:
+      context: ./etl
+      dockerfile: ./Dockerfile_user
+    container_name: etl_code
+    restart: always
+    environment:
+      DAGSTER_POSTGRES_USER: ${POSTGRES_USER}
+      DAGSTER_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DAGSTER_POSTGRES_DB: ${POSTGRES_DB_DAGSTER}
+      DAGSTER_CURRENT_IMAGE: etl_code_image
+    networks:
+      - app-network
 
-  # etl-service:
-  #     build:
-  #       context: ./etl
-  #       dockerfile: Dockerfile
-  #     environment:
-  #       - DB_DESTINATION_URL=${DB_DESTINATION_URL}
-  #     ports:
-  #       - "8086:80"
-  #     depends_on: 
-  #       - api-service
-  #       - db-source
-  #     networks:
-  #       - app-network
+  etl-code-webserver-service:
+    build:
+      context: ./etl
+      dockerfile: ./Dockerfile_dagster
+    entrypoint:
+      - dagster-webserver
+      - -h
+      - '0.0.0.0'
+      - -p
+      - '3000'
+      - -w
+      - workspace.yaml
+    container_name: etl_code_webserver
+    expose:
+      - '3000'
+    ports:
+      - '3000:3000'
+    environment:
+      DAGSTER_POSTGRES_USER: ${POSTGRES_USER}
+      DAGSTER_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DAGSTER_POSTGRES_DB: ${POSTGRES_DB_DAGSTER}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/io_manager_storage:/tmp/io_manager_storage
+    networks:
+      - app-network
+    depends_on:
+      db-dagster:
+        condition: service_healthy
+      etl-code-service:
+        condition: service_started
+  etl-daemon-service:
+    build:
+      context: ./etl
+      dockerfile: ./Dockerfile_dagster
+    entrypoint:
+      - dagster-daemon
+      - run
+    container_name: etl_daemon
+    restart: on-failure
+    environment:
+      DAGSTER_POSTGRES_USER: ${POSTGRES_USER}
+      DAGSTER_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DAGSTER_POSTGRES_DB: ${POSTGRES_DB_DAGSTER}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/io_manager_storage:/tmp/io_manager_storage
+    networks:
+      - app-network
+    depends_on:
+      db-dagster:
+        condition: service_healthy
+      etl-code-service:
+        condition: service_started
 
-        
 volumes:
   db_data_source:
   db_data_destination:

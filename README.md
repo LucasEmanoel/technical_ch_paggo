@@ -26,7 +26,17 @@ pip install -r api/requirements.txt
 ```
 docker-compose up --build
 ```
- 
+
+4. Rodar o pipeline
+```
+dagster dev -f quickstart/assets.py
+```
+
 ## Modelo
+![Modelo](public/diagram.jpg "Modelo ER")
+- Considerando bancos de dados em containers diferentes, é estabelecido uma relação logica entre data e sinal, apenas por timestamp.
+- cada timestamp em sinal, será o primeiro valor dos registros agregados, o valor de agg_rows determina quantos registros de data devem ser utilizados na agregação: Ex: 10-Minutal irá utilizar 10 registros. 
 
 
+## Refs
+- https://docs.dagster.io/guides/build/partitions-and-backfills/partitioning-assets
