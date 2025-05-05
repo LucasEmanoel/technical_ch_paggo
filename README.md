@@ -14,6 +14,8 @@ Documentação de instalação:
 ```
 git clone https://github.com/LucasEmanoel/technical_ch_paggo.git && cd ./technical_ch_paggo
 ```
+- Copie o arquivo `.env.example` para um arquivo `.env` na raiz do projeto, as informações estão previamente definidas, mude caso necessite.
+
 ## 3. Verificar instalação do Docker e Compose
 
 Confirme que ambos estão disponíveis na sua máquina:
